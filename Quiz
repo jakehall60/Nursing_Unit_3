@@ -6,11 +6,12 @@
     <title>Interactive Quiz</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
-        .question { margin-bottom: 20px; }
+        .question { margin-bottom: 20px; display: none; }
         .options button { display: block; margin: 5px 0; padding: 10px; cursor: pointer; }
         .feedback { display: none; margin-top: 10px; font-weight: bold; }
         .correct { color: green; }
         .incorrect { color: red; }
+        .next-btn { display: none; margin-top: 10px; padding: 10px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -25,19 +26,41 @@
             <button onclick="checkAnswer(this, false, 'q1')">d. Cimetidine (Tagamet)</button>
         </div>
         <p class="feedback" id="q1-feedback"></p>
+        <button class="next-btn" onclick="nextQuestion('q1', 'q2')">Next Question</button>
+    </div>
+    
+    <div class="question" id="q2">
+        <p>2. When a diabetic patient asks about maintaining adequate blood glucose levels, which statement by the nurse is most accurate?</p>
+        <div class="options">
+            <button onclick="checkAnswer(this, false, 'q2')">a. "Glucose is the only type of fuel used by body cells."</button>
+            <button onclick="checkAnswer(this, true, 'q2')">b. "The central nervous system cannot store glucose and needs a continuous supply."</button>
+            <button onclick="checkAnswer(this, false, 'q2')">c. "Without glucose, erythrocytes cannot produce ATP."</button>
+            <button onclick="checkAnswer(this, false, 'q2')">d. "Glucose counteracts lactic acid formation."</button>
+        </div>
+        <p class="feedback" id="q2-feedback"></p>
+        <button class="next-btn" onclick="nextQuestion('q2', 'q3')">Next Question</button>
     </div>
     
     <script>
+        document.getElementById('q1').style.display = 'block';
+        
         function checkAnswer(button, isCorrect, questionId) {
             let feedback = document.getElementById(questionId + "-feedback");
+            let nextBtn = document.querySelector("#" + questionId + " .next-btn");
             if (isCorrect) {
-                feedback.textContent = "Correct! Furosemide is a loop diuretic and can increase serum glucose levels; its use is contraindicated with insulin.";
+                feedback.textContent = "Correct!";
                 feedback.className = "feedback correct";
             } else {
                 feedback.textContent = "Incorrect. Try again or see the correct answer after your attempt.";
                 feedback.className = "feedback incorrect";
             }
             feedback.style.display = "block";
+            nextBtn.style.display = "block";
+        }
+        
+        function nextQuestion(current, next) {
+            document.getElementById(current).style.display = 'none';
+            document.getElementById(next).style.display = 'block';
         }
     </script>
 </body>
