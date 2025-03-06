@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Quiz</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .question { margin-bottom: 20px; }
+        .options button { display: block; margin: 5px 0; padding: 10px; cursor: pointer; }
+        .feedback { display: none; margin-top: 10px; font-weight: bold; }
+        .correct { color: green; }
+        .incorrect { color: red; }
+    </style>
+</head>
+<body>
+    <h2>Interactive Quiz</h2>
+    
+    <div class="question" id="q1">
+        <p>1. The nurse instructs a patient with type 1 diabetes mellitus to avoid which of the following drugs while taking insulin?</p>
+        <div class="options">
+            <button onclick="checkAnswer(this, false, 'q1')">a. Dicumarol (Bishydroxycoumarin)</button>
+            <button onclick="checkAnswer(this, true, 'q1')">b. Furosemide (Lasix)</button>
+            <button onclick="checkAnswer(this, false, 'q1')">c. Reserpine (Serpasil)</button>
+            <button onclick="checkAnswer(this, false, 'q1')">d. Cimetidine (Tagamet)</button>
+        </div>
+        <p class="feedback" id="q1-feedback"></p>
+    </div>
+    
+    <script>
+        function checkAnswer(button, isCorrect, questionId) {
+            let feedback = document.getElementById(questionId + "-feedback");
+            if (isCorrect) {
+                feedback.textContent = "Correct! Furosemide is a loop diuretic and can increase serum glucose levels; its use is contraindicated with insulin.";
+                feedback.className = "feedback correct";
+            } else {
+                feedback.textContent = "Incorrect. Try again or see the correct answer after your attempt.";
+                feedback.className = "feedback incorrect";
+            }
+            feedback.style.display = "block";
+        }
+    </script>
+</body>
+</html>
