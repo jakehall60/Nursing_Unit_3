@@ -5,63 +5,94 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interactive Quiz</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .question { margin-bottom: 20px; display: none; }
-        .options button { display: block; margin: 5px 0; padding: 10px; cursor: pointer; }
+        body { font-family: Arial, sans-serif; font-size: 20px; margin: 20px; }
+        .question-container { display: none; margin-bottom: 20px; }
+        .options button { display: block; margin: 10px 0; padding: 14px; cursor: pointer; font-size: 18px; }
         .feedback { display: none; margin-top: 10px; font-weight: bold; }
         .correct { color: green; }
         .incorrect { color: red; }
-        .next-btn { display: none; margin-top: 10px; padding: 10px; cursor: pointer; }
+        .next-btn { display: none; margin-top: 10px; padding: 14px; cursor: pointer; font-size: 18px; }
+        .summary { display: none; margin-top: 20px; font-size: 20px; }
     </style>
 </head>
 <body>
     <h2>Interactive Quiz</h2>
     
-    <div class="question" id="q1">
-        <p>1. The nurse instructs a patient with type 1 diabetes mellitus to avoid which of the following drugs while taking insulin?</p>
-        <div class="options">
-            <button onclick="checkAnswer(this, false, 'q1')">a. Dicumarol (Bishydroxycoumarin)</button>
-            <button onclick="checkAnswer(this, true, 'q1')">b. Furosemide (Lasix)</button>
-            <button onclick="checkAnswer(this, false, 'q1')">c. Reserpine (Serpasil)</button>
-            <button onclick="checkAnswer(this, false, 'q1')">d. Cimetidine (Tagamet)</button>
-        </div>
-        <p class="feedback" id="q1-feedback"></p>
-        <button class="next-btn" onclick="nextQuestion('q1', 'q2')">Next Question</button>
-    </div>
-    
-    <div class="question" id="q2">
-        <p>2. When a diabetic patient asks about maintaining adequate blood glucose levels, which statement by the nurse is most accurate?</p>
-        <div class="options">
-            <button onclick="checkAnswer(this, false, 'q2')">a. "Glucose is the only type of fuel used by body cells."</button>
-            <button onclick="checkAnswer(this, true, 'q2')">b. "The central nervous system cannot store glucose and needs a continuous supply."</button>
-            <button onclick="checkAnswer(this, false, 'q2')">c. "Without glucose, erythrocytes cannot produce ATP."</button>
-            <button onclick="checkAnswer(this, false, 'q2')">d. "Glucose counteracts lactic acid formation."</button>
-        </div>
-        <p class="feedback" id="q2-feedback"></p>
-        <button class="next-btn" onclick="nextQuestion('q2', 'q3')">Next Question</button>
-    </div>
+    <div id="quiz-container"></div>
+    <div class="summary" id="summary"></div>
     
     <script>
-        document.getElementById('q1').style.display = 'block';
+        const questions = {quiz_json};  // Extracted questions from your document
         
-        function checkAnswer(button, isCorrect, questionId) {
-            let feedback = document.getElementById(questionId + "-feedback");
-            let nextBtn = document.querySelector("#" + questionId + " .next-btn");
+        let currentQuestionIndex = 0;
+        let correctCount = 0;
+        let incorrectAnswers = [];
+
+        function loadQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                showSummary();
+                return;
+            }
+            const questionData = questions[currentQuestionIndex];
+            const quizContainer = document.getElementById("quiz-container");
+            let optionsHTML = "";
+            questionData.options.forEach((opt) => {
+                optionsHTML += `<button onclick="checkAnswer(${opt.is_correct}, '${questionData.rationale}')">${opt.option}</button>`;
+            });
+
+            quizContainer.innerHTML = `
+                <div class="question-container">
+                    <p>${questionData.question}</p>
+                    <div class="options">${optionsHTML}</div>
+                    <p class="feedback" id="feedback"></p>
+                    <button class="next-btn" onclick="nextQuestion()">Next Question</button>
+                </div>
+            `;
+            document.querySelector(".question-container").style.display = "block";
+        }
+
+        function checkAnswer(isCorrect, rationale) {
+            let feedback = document.getElementById("feedback");
+            let nextBtn = document.querySelector(".next-btn");
             if (isCorrect) {
                 feedback.textContent = "Correct!";
                 feedback.className = "feedback correct";
+                correctCount++;
             } else {
-                feedback.textContent = "Incorrect. Try again or see the correct answer after your attempt.";
+                feedback.textContent = "Incorrect. " + rationale;
                 feedback.className = "feedback incorrect";
+                incorrectAnswers.push(questions[currentQuestionIndex]);
             }
             feedback.style.display = "block";
             nextBtn.style.display = "block";
         }
-        
-        function nextQuestion(current, next) {
-            document.getElementById(current).style.display = 'none';
-            document.getElementById(next).style.display = 'block';
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            loadQuestion();
         }
+
+        function showSummary() {
+            const summaryContainer = document.getElementById("summary");
+            let reviewSection = "";
+            if (incorrectAnswers.length > 0) {
+                reviewSection = "<h4>Review Incorrect Answers:</h4>";
+                incorrectAnswers.forEach(q => {
+                    reviewSection += `<p><strong>Q:</strong> ${q.question}</p>
+                    <p><strong>Correct Answer & Rationale:</strong> ${q.rationale}</p>`;
+                });
+            }
+            summaryContainer.innerHTML = `
+                <h3>Quiz Completed!</h3>
+                <p>Correct Answers: ${correctCount}</p>
+                <p>Incorrect Answers: ${questions.length - correctCount}</p>
+                ${reviewSection}
+            `;
+            summaryContainer.style.display = "block";
+            document.getElementById("quiz-container").style.display = "none";
+        }
+
+        loadQuestion();
     </script>
 </body>
 </html>
